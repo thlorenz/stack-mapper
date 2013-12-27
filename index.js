@@ -20,14 +20,6 @@ function cropStack(stack) {
   return stack.filter(function (x) { return x.fileName === generatedFile });
 }
 
-function rewriteStack(stackString, mapped) {
-  var generatedFile = mapped[0].fileName; 
-  return mapped.reduce(function (acc, x) {
-    var regex = new RegExp(generatedFile + '[:]0*' + x.lineNumber + '[:]0*' + x.columnNumber);
-    return acc.replace(regex, x.origFile + ':' + x.origLineNumber + ':' + x.origColumnNumber);
-  }, stackString); 
-}
-
 function StackMapper(sourcemap) {
   if (!(this instanceof StackMapper)) return new StackMapper(sourcemap);
   if (typeof sourcemap !== 'object') 
@@ -59,6 +51,16 @@ proto._mapStack = function (stack) {
   });
 }
 
+proto._rewriteStack = function (stackString, mapped, includeSources) {
+  var generatedFile = mapped[0].fileName; 
+  return mapped.reduce(function (acc, x) {
+    var regex = new RegExp('[(]*' + generatedFile + '[:]0*' + x.lineNumber + '[:]0*' + x.columnNumber + '[)]*');
+    var source = includeSources ? '\n\t"' + x.sourceLine + '"': '';
+    return acc.replace(regex, '(' + x.origFile + ':' + x.origLineNumber + ':' + x.origColumnNumber + ')' + source);
+  }, stackString); 
+}
+
+
 proto.map = function (stack, includeSources) {
   // parse expects an error as argument, but only uses stack property of it
   // we want to stay as generic as possible and allow stacks that may have been grabbed from stdout as well
@@ -68,7 +70,7 @@ proto.map = function (stack, includeSources) {
 
   this._mapStack(adapted);
 
-  return { stack: rewriteStack(stack, adapted), parsed: adapted };
+  return { stack: this._rewriteStack(stack, adapted, includeSources), parsed: adapted };
 }
 
 
@@ -85,7 +87,7 @@ if (!module.parent && typeof window === 'undefined') {
      
     var sm = new StackMapper(res.map);
     var error = res.main();
-    var info = sm.map(error.stack);
+    var info = sm.map(error.stack, true);
 
     console.log(info.stack);
   });
