@@ -53,9 +53,15 @@ proto._mapStack = function (stack) {
 
 proto._rewriteStack = function (stackString, mapped, includeSources) {
   var generatedFile = mapped[0].fileName; 
+  var first = true;
   return mapped.reduce(function (acc, x) {
     var regex = new RegExp('[(]*' + generatedFile + '[:]0*' + x.lineNumber + '[:]0*' + x.columnNumber + '[)]*');
-    var source = includeSources ? '\n\t"' + x.sourceLine + '"': '';
+    var source = '';
+    if (includeSources && first) {
+      source += '\n\t"' + x.sourceLine + '"';
+      first = false;
+    }
+
     return acc.replace(regex, '(' + x.origFile + ':' + x.origLineNumber + ':' + x.origColumnNumber + ')' + source);
   }, stackString); 
 }
@@ -71,24 +77,4 @@ proto.map = function (stack, includeSources) {
   this._mapStack(adapted);
 
   return { stack: this._rewriteStack(stack, adapted, includeSources), parsed: adapted };
-}
-
-
-// Test
-function inspect(obj, depth) {
-  console.error(require('util').inspect(obj, false, depth || 5, true));
-}
-
-var bundleNmap = require('./test/util/bundle-n-map');
-if (!module.parent && typeof window === 'undefined') {
-
-  var res = bundleNmap('onefile', function (err, res) {
-    if (err) return console.error(err);
-     
-    var sm = new StackMapper(res.map);
-    var error = res.main();
-    var info = sm.map(error.stack, true);
-
-    console.log(info.stack);
-  });
 }

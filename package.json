@@ -4,11 +4,7 @@
   "description": "Initialize it with a source map, then feed it error stacks to have the trace locations mapped to the original files.",
   "main": "index.js",
   "scripts": {
-    "test-main": "tape test/*.js",
-    "test-0.8": "nave use 0.8 npm run test-main",
-    "test-0.10": "nave use 0.10 npm run test-main",
-    "test-all": "npm run test-main && npm run test-0.8 && npm run test-0.10",
-    "test": "if [ -e $TRAVIS ]; then npm run test-all; else npm run test-main; fi"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +16,6 @@
     "source-map": "~0.1.31"
   },
   "devDependencies": {
-    "nave": "~0.4.3",
     "tape": "~1.0.4",
     "convert-source-map": "~0.3.3",
     "browserify": "~3.14.1"
