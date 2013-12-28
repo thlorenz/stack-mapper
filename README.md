@@ -49,9 +49,9 @@ Error
 ## Obtaining the source map
 
 You need to pass the source map as an object as shown in the example. If your source map happens to be in a different
-format, pleas use the [convert-source-map]() module in order to convert it.
+format, please use the [convert-source-map](https://github.com/thlorenz/convert-source-map) module in order to convert it.
 
-[browserify]() attaches source maps to the bottom of the bundle if the `--debug` flag is set, here is an example how to
+[browserify](https://github.com/substack/node-browserify) attaches source maps to the bottom of the bundle if the `--debug` flag is set, here is an example how to
 obtain and convert it to use with `stack-mapper`.
 
 ```js
