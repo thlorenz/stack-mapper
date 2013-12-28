@@ -60,12 +60,12 @@ test('\nthree files returning, one throwing an error including source', function
     t.deepEqual(
         stack
       , [ 'Error: shouldn\'t have called foobar ;)',
-        '    at foobar (/Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw/foobar.js:4:9)',
+        '    at foobar (' + __dirname + '/threefiles-throw/foobar.js:4:9)',
         '\t"  throw new Error(\'shouldn\\\'t have called foobar ;)\');  "',
-        '    at module.exports (/Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw/barbar.js:6:10)',
-        '    at bar (/Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw/main.js:8:12)',
-        '    at Object.main (/Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw/main.js:10:10)',
-        '    at /Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw.js' ]
+        '    at module.exports (' + __dirname + '/threefiles-throw/barbar.js:6:10)',
+        '    at bar (' + __dirname + '/threefiles-throw/main.js:8:12)',
+        '    at Object.main (' + __dirname + '/threefiles-throw/main.js:10:10)',
+        '    at ' + __dirname + '/threefiles-throw.js' ]
       , 'returns stack with all trace information mapped'
     )
 
