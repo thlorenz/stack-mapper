@@ -34,7 +34,7 @@
     "node": ">=0.6"
   },
   "testling": {
-    "files": "test/*.js",
+    "files": "test/prepared/*.js",
     "browsers": [
       "ie/8..latest",
       "firefox/17..latest",

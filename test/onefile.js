@@ -16,6 +16,7 @@ test('\none file returning error no sources', function (t) {
      
     var sm = stackMapper(res.map);
     var error = res.main();
+
     var info = sm.map(error.stack);
     var stack = relevant(info, 4);
 
