@@ -51,13 +51,13 @@ proto._mapStack = function (stack) {
   });
 }
 
-proto._rewriteStack = function (stackString, mapped, includeSources) {
+proto._rewriteStack = function (stackString, mapped, includeSource) {
   var generatedFile = mapped[0].fileName; 
   var first = true;
   return mapped.reduce(function (acc, x) {
     var regex = new RegExp('[(]*' + generatedFile + '[:]0*' + x.lineNumber + '[:]0*' + x.columnNumber + '[)]*');
     var source = '';
-    if (includeSources && first) {
+    if (includeSource && first) {
       source += '\n\t"' + x.sourceLine + '"';
       first = false;
     }
@@ -67,7 +67,7 @@ proto._rewriteStack = function (stackString, mapped, includeSources) {
 }
 
 
-proto.map = function (stack, includeSources) {
+proto.map = function (stack, includeSource) {
   // parse expects an error as argument, but only uses stack property of it
   // we want to stay as generic as possible and allow stacks that may have been grabbed from stdout as well
   // therefore taking an Error as argument wouldn't be very helpful
@@ -76,5 +76,5 @@ proto.map = function (stack, includeSources) {
 
   this._mapStack(adapted);
 
-  return { stack: this._rewriteStack(stack, adapted, includeSources), parsed: adapted };
+  return { stack: this._rewriteStack(stack, adapted, includeSource), parsed: adapted };
 }
