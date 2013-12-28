@@ -1,6 +1,6 @@
 {
   "name": "stack-mapper",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Initialize it with a source map, then feed it error stacks to have the trace locations mapped to the original files.",
   "main": "index.js",
   "scripts": {
