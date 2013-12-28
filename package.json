@@ -46,10 +46,10 @@
   "testling": {
     "files": "test/prepared/*.js",
     "browsers": [
-      "ie/8..latest",
-      "firefox/17..latest",
+      "ie/6..latest",
+      "firefox/22..latest",
       "firefox/nightly",
-      "chrome/22..latest",
+      "chrome/26..latest",
       "chrome/canary",
       "opera/12..latest",
       "opera/next",
