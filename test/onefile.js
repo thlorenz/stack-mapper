@@ -1,7 +1,7 @@
 'use strict';
 /*jshint asi: true */
 
-var test = require('tape')
+var test = require('tap').test
   , stackMapper = require('../')
   , bundleNmap = require('./util/bundle-n-map')
   , relevant = require('./util/relevant')
