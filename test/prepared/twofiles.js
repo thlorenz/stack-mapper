@@ -5,10 +5,6 @@ var test = require('tape')
   , stackMapper = require('../../')
   , relevant = require('../util/relevant')
 
-function inspect(obj, depth) {
-  console.error(require('util').inspect(obj, false, depth || 5, true));
-}
-
 var origStack = [ 
   'Error',
   '    at foobar (/full/path/to/bundle.js:5:10)',
@@ -39,7 +35,6 @@ test('\ntwo files returning error no sources', function (t) {
   var info = sm.map(origStack);
   var stack = relevant(info, 6);
 
-  inspect(stack);
   t.deepEqual(
       stack
     , [ 'Error',
@@ -59,7 +54,6 @@ test('\ntwo files returning error including sources', function (t) {
   var info = sm.map(origStack, true);
   var stack = relevant(info, 7);
 
-  inspect(stack);
   t.deepEqual(
       stack
     , [ 'Error',

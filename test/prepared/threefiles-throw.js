@@ -6,10 +6,6 @@ var test = require('tape')
   , stackMapper = require('../../')
   , relevant = require('../util/relevant')
 
-function inspect(obj, depth) {
-  console.error(require('util').inspect(obj, false, depth || 5, true));
-}
-
 var origStack = [ 
   'Error: shouldn\'t have called foobar ;)',
   '    at foobar (/full/path/to/bundle.js:14:9)',
@@ -42,7 +38,6 @@ test('\nthree files returning, one throwing an error no source', function (t) {
   var info = sm.map(origStack);
   var stack = relevant(info, 6);
 
-  inspect(stack);
   t.deepEqual(
       stack
     , [ 'Error: shouldn\'t have called foobar ;)',
@@ -62,7 +57,6 @@ test('\nthree files returning, one throwing an error including source', function
   var info = sm.map(origStack, true);
   var stack = relevant(info, 7);
 
-  inspect(stack);
   t.deepEqual(
       stack
     , [ 'Error: shouldn\'t have called foobar ;)',
