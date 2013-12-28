@@ -1,5 +1,8 @@
 'use strict';
 
+// isarray only shims if Array.isArray is not present
+Array.isArray = require('isarray');
+
 var stackTrace = require('stack-trace')
   , setupConsumer = require('./lib/setup-consumer')
 
