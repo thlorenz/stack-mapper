@@ -15,6 +15,14 @@ module.exports =
  */
 function stackMapper(sourcemap) { return new StackMapper(sourcemap); }
 var proto = StackMapper.prototype;
+
+function filter(arr, fn) {
+  var matches = [];
+  for (var i = 0; i < arr.length; i++) {
+    if (fn(arr[i])) matches.push(arr[i]);
+  }
+  return matches;
+}
   
 /**
  * Crops the stack by removing all traces that point originated outside the generated file we mapped
@@ -28,7 +36,7 @@ var proto = StackMapper.prototype;
 function cropStack(stack) {
   if (!stack || !stack.length) return [];
   var generatedFile = stack[0].fileName; 
-  return stack.filter(function (x) { return x.fileName === generatedFile });
+  return filter(stack, function (x) { return x.fileName === generatedFile });
 }
 
 /**
@@ -52,7 +60,10 @@ function StackMapper(sourcemap) {
 
 proto._mapStack = function (stack) {
   var self = this;
-  stack.forEach(function (x) { 
+
+  for (var i = 0; i < stack.length; i++) {
+    var x = stack[i];
+
     var origPosition = self._originalPosition(x.lineNumber, x.columnNumber);
     x.origFile = origPosition.source;
     x.origLineNumber = origPosition.line;
@@ -68,13 +79,16 @@ proto._mapStack = function (stack) {
     if (sourceLines && x.origLineNumber < sourceLines.length) {
       x.sourceLine = sourceLines[x.origLineNumber - 1];
     }
-  });
+  }
 }
 
 proto._rewriteStack = function (stackString, mapped, includeSource) {
   var generatedFile = mapped[0].fileName; 
   var first = true;
-  return mapped.reduce(function (acc, x) {
+  var s = stackString;
+
+  for (var i = 0; i < mapped.length; i++) {
+    var x = mapped[i]
     var regex = new RegExp('[(]*' + generatedFile + '[:]0*' + x.lineNumber + '[:]0*' + x.columnNumber + '[)]*');
     var source = '';
     if (includeSource && first) {
@@ -82,8 +96,9 @@ proto._rewriteStack = function (stackString, mapped, includeSource) {
       first = false;
     }
 
-    return acc.replace(regex, '(' + x.origFile + ':' + x.origLineNumber + ':' + x.origColumnNumber + ')' + source);
-  }, stackString); 
+    s = s.replace(regex, '(' + x.origFile + ':' + x.origLineNumber + ':' + x.origColumnNumber + ')' + source);
+  }
+  return s;
 }
 
 /**
