@@ -2,6 +2,7 @@
 
 var stackTrace = require('stack-trace')
   , setupConsumer = require('./lib/setup-consumer')
+  , shims = require('./lib/shims')
 
 module.exports = 
 
@@ -114,6 +115,9 @@ proto._rewriteStack = function (stackString, mapped, includeSource) {
  *    - parsed deserialized stack with all original information plus the one added by stack-mapper 
  */
 proto.map = function (stack, includeSource) {
+
+  shims.define();
+
   // parse expects an error as argument, but only uses stack property of it
   // we want to stay as generic as possible and allow stacks that may have been grabbed from stdout as well
   // therefore taking an Error as argument wouldn't be very helpful
@@ -122,5 +126,9 @@ proto.map = function (stack, includeSource) {
 
   this._mapStack(adapted);
 
-  return { stack: this._rewriteStack(stack, adapted, includeSource), parsed: adapted };
+  var rewritten = this._rewriteStack(stack, adapted, includeSource);
+
+  shims.undefine();
+
+  return { stack: rewritten, parsed: adapted };
 }
