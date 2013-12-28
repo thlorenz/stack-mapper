@@ -1,10 +1,5 @@
 'use strict';
 
-// shims -- this stuff's gotta work in IE6,7,8 -- thanks MS
-// isarray only shims if Array.isArray is not present
-Array.isArray = require('isarray');
-if (typeof Array.map !== 'function') Array.map = require('array-map');
-
 var stackTrace = require('stack-trace')
   , setupConsumer = require('./lib/setup-consumer')
 
