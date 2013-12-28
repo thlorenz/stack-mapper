@@ -1,6 +1,6 @@
 {
   "name": "stack-mapper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Initialize it with a source map, then feed it error stacks to have the trace locations mapped to the original files.",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,14 @@
     "browserify": "~3.14.1",
     "tap": "~0.4.6"
   },
-  "keywords": [ "sourcemap", "source-map", "error", "stack", "trace", "map" ],
+  "keywords": [
+    "sourcemap",
+    "source-map",
+    "error",
+    "stack",
+    "trace",
+    "map"
+  ],
   "author": {
     "name": "Thorsten Lorenz",
     "email": "thlorenz@gmx.de",
