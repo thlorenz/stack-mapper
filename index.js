@@ -44,6 +44,7 @@ function StackMapper(sourcemap) {
   if (typeof sourcemap !== 'object') 
     throw new Error('sourcemap needs to be an object, please use convert-source-map module to convert it from any other format\n' +
                     'See: https://github.com/thlorenz/stack-mapper#obtaining-the-source-map');
+
   var prepped = setupConsumer(sourcemap);
   this._originalPosition = prepped.originalPosition;
   this._sourcesByFile = prepped.sourcesByFile;
@@ -93,7 +94,9 @@ proto._rewriteStack = function (stackString, mapped, includeSource) {
  * @function
  * @param {string} stack the stack of the Error object
  * @param {boolean=} includeSource if set to true, the source code at the first traced location is included
- * @return {string} the error stack with adapted locations
+ * @return {Object} info about the error stack with adapted locations with the following properties
+ *    - stack  stringified stack
+ *    - parsed deserialized stack with all original information plus the one added by stack-mapper 
  */
 proto.map = function (stack, includeSource) {
   // parse expects an error as argument, but only uses stack property of it

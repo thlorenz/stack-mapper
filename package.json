@@ -21,7 +21,7 @@
     "browserify": "~3.14.1",
     "tap": "~0.4.6"
   },
-  "keywords": [],
+  "keywords": [ "sourcemap", "source-map", "error", "stack", "trace", "map" ],
   "author": {
     "name": "Thorsten Lorenz",
     "email": "thlorenz@gmx.de",

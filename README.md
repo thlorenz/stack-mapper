@@ -73,138 +73,34 @@ browserify()
 
 ## API
 
-<!-- START docme generated API please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN docme TO UPDATE -->
+### stackMapper(sourcemap)
 
-<div>
-<div class="jsdoc-githubify">
-<section>
-<article>
-<div class="container-overview">
-<dl class="details">
-</dl>
-</div>
-<dl>
-<dt>
-<h4 class="name" id="stackMapper"><span class="type-signature"></span>stackMapper<span class="signature">(sourcemap)</span><span class="type-signature"> &rarr; {StackMapper}</span></h4>
-</dt>
-<dd>
-<div class="description">
-<p>Returns a Stackmapper that will use the given source map to map error trace locations.</p>
-</div>
-<h5>Parameters:</h5>
-<table class="params">
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th class="last">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="name"><code>sourcemap</code></td>
-<td class="type">
-<span class="param-type">Object</span>
-</td>
-<td class="description last"><p>source map for the generated file</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="details">
-<dt class="tag-source">Source:</dt>
-<dd class="tag-source"><ul class="dummy">
-<li>
-<a href="https://github.com/thlorenz/stack-mapper/blob/master/index.js">index.js</a>
-<span>, </span>
-<a href="https://github.com/thlorenz/stack-mapper/blob/master/index.js#L8">lineno 8</a>
-</li>
-</ul></dd>
-</dl>
-<h5>Returns:</h5>
-<div class="param-desc">
-<p>stack mapper for the particular source map</p>
-</div>
-<dl>
-<dt>
-Type
-</dt>
-<dd>
-<span class="param-type">StackMapper</span>
-</dd>
-</dl>
-</dd>
-</dl>
-<dt>
-<h4 class="name" id="map"><span class="type-signature"></span>map<span class="signature">(stack, <span class="optional">includeSource</span>)</span><span class="type-signature"> &rarr; {string}</span></h4>
-</dt>
-<dd>
-<div class="description">
-<p>Maps the trace statements of the given error stack and replaces locations
-referencing code in the generated file with the locations inside the original files.</p>
-</div>
-<h5>Parameters:</h5>
-<table class="params">
-<thead>
-<tr>
-<th>Name</th>
-<th>Type</th>
-<th>Argument</th>
-<th class="last">Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="name"><code>stack</code></td>
-<td class="type">
-<span class="param-type">string</span>
-</td>
-<td class="attributes">
-</td>
-<td class="description last"><p>the stack of the Error object</p></td>
-</tr>
-<tr>
-<td class="name"><code>includeSource</code></td>
-<td class="type">
-<span class="param-type">boolean</span>
-</td>
-<td class="attributes">
-&lt;optional><br>
-</td>
-<td class="description last"><p>if set to true, the source code at the first traced location is included</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="details">
-<dt class="tag-source">Source:</dt>
-<dd class="tag-source"><ul class="dummy">
-<li>
-<a href="https://github.com/thlorenz/stack-mapper/blob/master/index.js">index.js</a>
-<span>, </span>
-<a href="https://github.com/thlorenz/stack-mapper/blob/master/index.js#L88">lineno 88</a>
-</li>
-</ul></dd>
-</dl>
-<h5>Returns:</h5>
-<div class="param-desc">
-<p>the error stack with adapted locations</p>
-</div>
-<dl>
-<dt>
-Type
-</dt>
-<dd>
-<span class="param-type">string</span>
-</dd>
-</dl>
-</dd>
-</article>
-</section>
-</div>
+```
+/**
+ * Returns a Stackmapper that will use the given source map to map error trace locations.
+ * 
+ * @name stackMapper
+ * @function
+ * @param {Object} sourcemap source map for the generated file
+ * @return {StackMapper} stack mapper for the particular source map
+ */
+```
 
-*generated with [docme](https://github.com/thlorenz/docme)*
-</div>
-<!-- END docme generated API please keep comment here to allow auto update -->
+### stacMapper.map(stack, includeSource)
+```
+/**
+ * Maps the trace statements of the given error stack and replaces locations
+ * referencing code in the generated file with the locations inside the original files.
+ * 
+ * @name map
+ * @function
+ * @param {string} stack the stack of the Error object
+ * @param {boolean=} includeSource if set to true, the source code at the first traced location is included
+ * @return {Object} info about the error stack with adapted locations with the following properties
+ *    - stack  stringified stack
+ *    - parsed deserialized stack with all original information plus the one added by stack-mapper 
+ */
+```
 
 ## License
 
