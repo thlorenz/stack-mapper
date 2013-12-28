@@ -54,9 +54,16 @@ function StackMapper(sourcemap) {
     throw new Error('sourcemap needs to be an object, please use convert-source-map module to convert it from any other format\n' +
                     'See: https://github.com/thlorenz/stack-mapper#obtaining-the-source-map');
 
-  var prepped = setupConsumer(sourcemap);
+  this._sourcemap = sourcemap;
+  this._prepared = false;
+}
+
+proto._prepare = function (includeSource) {
+  var prepped = setupConsumer(this._sourcemap, includeSource);
   this._originalPosition = prepped.originalPosition;
   this._sourcesByFile = prepped.sourcesByFile;
+  this._prepared = true;
+  this._includedSource = includeSource;
 }
 
 proto._mapStack = function (stack) {
@@ -117,6 +124,10 @@ proto._rewriteStack = function (stackString, mapped, includeSource) {
 proto.map = function (stack, includeSource) {
 
   shims.define();
+
+  // do work at latest point possible and only once
+  // however if we prepped before and didn't include source info, but now that is needed, we need to do it over
+  if (!this._prepared || (includeSource && !this._includedSource)) this._prepare(includeSource);
 
   // parse expects an error as argument, but only uses stack property of it
   // we want to stay as generic as possible and allow stacks that may have been grabbed from stdout as well
