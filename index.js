@@ -81,9 +81,10 @@ proto._mapStack = function (stack) {
  * @function
  * @param {Array} array of callsite objects (see readme for details about Callsite object)
  * @param {boolean} includeSource if set to true, the source code at the first traced location is included
- * @return {Object} info about the error stack with adapted locations with the following properties
- *    - stack  stringified stack
- *    - parsed deserialized stack with all original information plus the one added by stack-mapper 
+ * @return {Array.<Object>} info about the error stack with adapted locations, each with the following properties
+ *    - filename: original filename 
+ *    - line: origial line in that filename of the trace
+ *    - column: origial column on that line of the trace
  */
 proto.map = function (stack) {
 
