@@ -1,63 +1,34 @@
 'use strict';
 /*jshint asi: true */
 
-var test = require('tap').test
+var test = require('tape')
   , stackMapper = require('../')
   , bundleNmap = require('./util/bundle-n-map')
-  , relevant = require('./util/relevant')
+  , fromStr = require('./util/frames').fromStr
+  , v8ToSm = require('./util/frames').v8ToSm
 
 function inspect(obj, depth) {
   console.error(require('util').inspect(obj, false, depth || 5, true));
 }
 
-test('\ntwo files returning error no source', function (t) {
+test('two files returning error no source', function (t) {
   var res = bundleNmap('twofiles', function (err, res) {
     if (err) return console.error(err);
      
     var sm = stackMapper(res.map);
     var error = res.main();
-    var info = sm.map(error.stack);
-    var stack = relevant(info, 6);
+    var frames = v8ToSm(error);
+    var actual = sm.map(frames).slice(0, 5);
 
-    inspect(stack);
-    t.deepEqual(
-        stack
-      , [ 'Error',
-          '    at foobar (' + __dirname + '/twofiles/barbar.js:4:10)',
-          '    at module.exports (' + __dirname + '/twofiles/barbar.js:8:10)',
-          '    at bar (' + __dirname + '/twofiles/main.js:8:12)',
-          '    at Object.main (' + __dirname + '/twofiles/main.js:10:10)',
-          '    at ' + __dirname + '/twofiles.js' ]
-      , 'returns stack with all trace information mapped'
-    )
+    var expected = fromStr([
+          __dirname + '/twofiles/barbar.js:4:10',
+          __dirname + '/twofiles/barbar.js:8:10',
+          __dirname + '/twofiles/main.js:8:12',
+          __dirname + '/twofiles/main.js:10:10',
+          __dirname + '/twofiles.js:19:21'
+    ]);
 
+    t.deepEqual(actual, expected);
     t.end()
   })
 })
-
-test('\ntwo files returning error including source', function (t) {
-  var res = bundleNmap('twofiles', function (err, res) {
-    if (err) return console.error(err);
-     
-    var sm = stackMapper(res.map);
-    var error = res.main();
-    var info = sm.map(error.stack, true);
-    var stack = relevant(info, 7);
-
-    inspect(stack);
-    t.deepEqual(
-        stack
-      , [ 'Error',
-          '    at foobar (' + __dirname + '/twofiles/barbar.js:4:10)',
-          '\t"  return new Error();"',
-          '    at module.exports (' + __dirname + '/twofiles/barbar.js:8:10)',
-          '    at bar (' + __dirname + '/twofiles/main.js:8:12)',
-          '    at Object.main (' + __dirname + '/twofiles/main.js:10:10)',
-          '    at ' + __dirname + '/twofiles.js' ]
-      , 'returns stack with all trace information mapped'
-    )
-
-    t.end()
-  })
-})
-

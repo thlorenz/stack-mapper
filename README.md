@@ -7,14 +7,29 @@ Initialize it with a source map, then feed it error stacks to have the trace loc
 ```js
 var stackMapper = require('stack-mapper');
 
-var origStack = [ 
-  'Error',
-  '    at foobar (/full/path/to/bundle.js:5:10)',
-  '    at module.exports (/full/path/to/bundle.js:9:10)',
-  '    at bar (/full/path/to/bundle.js:20:12)',
-  '    at Object.main (/full/path/to/bundle.js:22:10)',
-  '    at /Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles.js:18:21' ]
-  .join('\n')
+// it is up to you to create stack-mapper compatible frame objects
+// this will depend on your environment
+var inframes = [{
+  filename: '/full/path/to/bundle.js',
+  line: 5,
+  column: 10
+}, {
+  filename: '/full/path/to/bundle.js',
+  line: 9,
+  column: 10
+}, {
+  filename: '/full/path/to/bundle.js',
+  line: 20,
+  column: 12
+}, {
+  filename: '/full/path/to/bundle.js',
+  line: 22,
+  column: 10,
+}, {
+  filename: '/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles.js',
+  line: 18,
+  column: 21
+}];
 
 var map = { version: 3,
   file: 'generated.js',
@@ -27,23 +42,26 @@ var map = { version: 3,
    [ '\'use strict\';\n\nfunction foobar() {\n  return new Error();\n}\n\nvar go = module.exports = function () {\n  return foobar();  \n};\n',
      '\'use strict\';\n\nvar barbar = require(\'./barbar\');\n\nmodule.exports = function main() {\n  var a = 1;\n  function bar() {\n    return barbar();\n  }\n  return bar();\n}\n' ] }
 
-var includeSource = true;
 var sm = stackMapper(map);
-var info = sm.map(origStack, includeSource);
+var frames = sm.map(inframes);
 
-console.log(info.stack);
+console.log(frames);
 ```
 
 #### Output
 
 ```
-Error
-    at foobar (/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles/barbar.js:4:10)
-      "  return new Error();"
-    at module.exports (/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles/barbar.js:8:10)
-    at bar (/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles/main.js:8:12)
-    at Object.main (/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles/main.js:10:10)
-    at /Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles.js:18:21
+[{
+    filename: '/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles/barbar.js',
+    line: 4,
+    column: 10
+}, {
+    filename: '/Users/thlorenz/dev/js/projects/stack-mapper/test/twofiles/barbar.js',
+    line: 8,
+    column: 10
+}, {
+ ...
+}]
 ```
 
 ## Obtaining the source map
@@ -86,21 +104,29 @@ browserify()
  */
 ```
 
-### stacMapper.map(stack, includeSource)
+### stackMapper.map(frames, includeSource)
 ```
 /**
- * Maps the trace statements of the given error stack and replaces locations
- * referencing code in the generated file with the locations inside the original files.
+ * Maps the trace statements of the given error stack frames to the origianl locations
+ * by looking up via the map file
  * 
  * @name map
  * @function
- * @param {string} stack the stack of the Error object
+ * @param {Array} frames the stack frames of the Error object (see Frames section below)
  * @param {boolean=} includeSource if set to true, the source code at the first traced location is included
  * @return {Object} info about the error stack with adapted locations with the following properties
  *    - stack  stringified stack
  *    - parsed deserialized stack with all original information plus the one added by stack-mapper 
  */
 ```
+
+## Stack Frames
+
+The frames array passed to stackMapper.map should contain at least the following items
+
+* filename
+* line
+* column
 
 ## License
 

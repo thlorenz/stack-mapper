@@ -24,21 +24,6 @@ function filter(arr, fn) {
   }
   return matches;
 }
-  
-/**
- * Crops the stack by removing all traces that point originated outside the generated file we mapped
- * 
- * @name cropStack
- * @private
- * @function
- * @param {Array.<Object>} stack original stack
- * @return {Array.<Object>} cropped stack
- */
-function cropStack(stack) {
-  if (!stack || !stack.length) return [];
-  var generatedFile = stack[0].fileName; 
-  return filter(stack, function (x) { return x.fileName === generatedFile });
-}
 
 /**
  * Creates a Stackmapper that will use the given source map to map error trace locations
@@ -58,55 +43,34 @@ function StackMapper(sourcemap) {
   this._prepared = false;
 }
 
-proto._prepare = function (includeSource) {
-  var prepped = setupConsumer(this._sourcemap, includeSource);
+proto._prepare = function () {
+  var prepped = setupConsumer(this._sourcemap);
   this._originalPosition = prepped.originalPosition;
-  this._sourcesByFile = prepped.sourcesByFile;
   this._prepared = true;
-  this._includedSource = includeSource;
 }
 
 proto._mapStack = function (stack) {
   var self = this;
 
-  for (var i = 0; i < stack.length; i++) {
-    var x = stack[i];
+  var generatedFile = stack[0].filename;
 
-    var origPosition = self._originalPosition(x.lineNumber, x.columnNumber);
-    x.origFile = origPosition.source;
-    x.origLineNumber = origPosition.line;
-    x.origColumnNumber = origPosition.column;
+  for (var i = 0; i < stack.length; i++) {
+    var frame = stack[i];
+
+    if (frame.filename !== generatedFile) {
+      continue;
+    }
+
+    var orig = self._originalPosition(frame.line, frame.column);
+    frame.filename = orig.source;
+    frame.line = orig.line;
 
     // In case that the sourcemap was generated for a javascript file, the column numbers might not have been added
     // In that case it makes sense to assume that it is the same as the generated column number
-    if (x.origFile.slice(-3) === '.js' && x.origColumnNumber === 0 && x.columnNumber > 0) {
-      x.origColumnNumber = x.columnNumber;
-    }
-
-    var sourceLines = self._sourcesByFile[x.origFile];
-    if (sourceLines && x.origLineNumber < sourceLines.length) {
-      x.sourceLine = sourceLines[x.origLineNumber - 1];
+    if (!(orig.source.slice(-3) === '.js' && orig.column === 0 && frame.column > 0)) {
+      frame.column = orig.column;
     }
   }
-}
-
-proto._rewriteStack = function (stackString, mapped, includeSource) {
-  var generatedFile = mapped[0].fileName; 
-  var first = true;
-  var s = stackString;
-
-  for (var i = 0; i < mapped.length; i++) {
-    var x = mapped[i]
-    var regex = new RegExp('[(]*' + generatedFile + '[:]0*' + x.lineNumber + '[:]0*' + x.columnNumber + '[)]*');
-    var source = '';
-    if (includeSource && first) {
-      source += '\n\t"' + x.sourceLine + '"';
-      first = false;
-    }
-
-    s = s.replace(regex, '(' + x.origFile + ':' + x.origLineNumber + ':' + x.origColumnNumber + ')' + source);
-  }
-  return s;
 }
 
 /**
@@ -115,31 +79,26 @@ proto._rewriteStack = function (stackString, mapped, includeSource) {
  * 
  * @name map
  * @function
- * @param {string} stack the stack of the Error object
- * @param {boolean=} includeSource if set to true, the source code at the first traced location is included
+ * @param {Array} array of callsite objects (see readme for details about Callsite object)
+ * @param {boolean} includeSource if set to true, the source code at the first traced location is included
  * @return {Object} info about the error stack with adapted locations with the following properties
  *    - stack  stringified stack
  *    - parsed deserialized stack with all original information plus the one added by stack-mapper 
  */
-proto.map = function (stack, includeSource) {
+proto.map = function (stack) {
 
   shims.define();
 
   // do work at latest point possible and only once
-  // however if we prepped before and didn't include source info, but now that is needed, we need to do it over
-  if (!this._prepared || (includeSource && !this._includedSource)) this._prepare(includeSource);
+  if (!this._prepared) this._prepare();
 
-  // parse expects an error as argument, but only uses stack property of it
-  // we want to stay as generic as possible and allow stacks that may have been grabbed from stdout as well
-  // therefore taking an Error as argument wouldn't be very helpful
-  var parsed = stackTrace.parse({ stack: stack });
-  var adapted = cropStack(parsed);
+  // clone to leave original intact
+  var adapted = [].concat(stack);
 
+  // replace stack entries with mapped entires to original
   this._mapStack(adapted);
-
-  var rewritten = this._rewriteStack(stack, adapted, includeSource);
 
   shims.undefine();
 
-  return { stack: rewritten, parsed: adapted };
+  return adapted;
 }

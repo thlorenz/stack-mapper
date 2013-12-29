@@ -1,59 +1,30 @@
 'use strict';
 /*jshint asi: true */
 
-var test = require('tap').test
+var test = require('tape')
   , stackMapper = require('../')
   , bundleNmap = require('./util/bundle-n-map')
-  , relevant = require('./util/relevant')
+  , fromStr = require('./util/frames').fromStr
+  , v8ToSm = require('./util/frames').v8ToSm
 
-function inspect(obj, depth) {
-  console.error(require('util').inspect(obj, false, depth || 5, true));
-}
 
-test('\none file returning error no sources', function (t) {
+test('\none file returning error', function (t) {
   var res = bundleNmap('onefile', function (err, res) {
     if (err) return console.error(err);
-     
+
     var sm = stackMapper(res.map);
     var error = res.main();
+    var frames = v8ToSm(error);
 
-    var info = sm.map(error.stack);
-    var stack = relevant(info, 4);
+    var actual = sm.map(frames).slice(0, 3);
 
-    inspect(stack);
-    t.deepEqual(
-        stack
-      , [ 'Error',
-          '    at bar (' + __dirname + '/onefile/main.js:6:12)',
-          '    at Object.main (' + __dirname + '/onefile/main.js:8:10)',
-          '    at ' + __dirname + '/onefile.js']
-      , 'returns stack with all trace information mapped'
-    )
+    var expected = fromStr([
+        __dirname + '/onefile/main.js:6:12',
+        __dirname + '/onefile/main.js:8:10',
+        __dirname + '/onefile.js:16:21'
+    ]);
 
-    t.end()
-  })
-})
-
-test('\none file returning error including sources', function (t) {
-  var res = bundleNmap('onefile', function (err, res) {
-    if (err) return console.error(err);
-     
-    var sm = stackMapper(res.map);
-    var error = res.main();
-    var info = sm.map(error.stack, true);
-    var stack = relevant(info, 5);
-
-    inspect(stack);
-    t.deepEqual(
-        stack
-      , [ 'Error',
-          '    at bar (' + __dirname + '/onefile/main.js:6:12)',
-          '\t"    return new Error();"',
-          '    at Object.main (' + __dirname + '/onefile/main.js:8:10)',
-          '    at ' + __dirname + '/onefile.js']
-      , 'returns stack with all trace information mapped and sources for first trace inserted'
-    )
-
+    t.deepEqual(actual, expected);
     t.end()
   })
 })

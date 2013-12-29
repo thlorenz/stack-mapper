@@ -1,16 +1,17 @@
 'use strict';
 /*jshint asi: true */
 
-var test = require('tap').test
+var test = require('tape')
   , stackMapper = require('../')
   , bundleNmap = require('./util/bundle-n-map')
-  , relevant = require('./util/relevant')
+  , fromStr = require('./util/frames').fromStr
+  , v8ToSm = require('./util/frames').v8ToSm
 
 function inspect(obj, depth) {
   console.error(require('util').inspect(obj, false, depth || 5, true));
 }
 
-test('\nthree files returning, one throwing an error no source', function (t) {
+test('three files returning, one throwing an error', function (t) {
   var res = bundleNmap('threefiles-throw', function (err, res) {
     if (err) return console.error(err);
      
@@ -22,53 +23,18 @@ test('\nthree files returning, one throwing an error no source', function (t) {
       error = e; 
     }
 
-    var info = sm.map(error.stack);
-    var stack = relevant(info, 6);
+    var frames = v8ToSm(error);
+    var actual = sm.map(frames).slice(0, 5);
 
-    inspect(stack);
-    t.deepEqual(
-        stack
-      , [ 'Error: shouldn\'t have called foobar ;)',
-        '    at foobar (' + __dirname + '/threefiles-throw/foobar.js:4:9)',
-        '    at module.exports (' + __dirname + '/threefiles-throw/barbar.js:6:10)',
-        '    at bar (' + __dirname + '/threefiles-throw/main.js:8:12)',
-        '    at Object.main (' + __dirname + '/threefiles-throw/main.js:10:10)',
-        '    at ' + __dirname + '/threefiles-throw.js' ]
-      , 'returns stack with all trace information mapped'
-    )
+    var expected = fromStr([
+      __dirname + '/threefiles-throw/foobar.js:4:9',
+      __dirname + '/threefiles-throw/barbar.js:6:10',
+      __dirname + '/threefiles-throw/main.js:8:12',
+      __dirname + '/threefiles-throw/main.js:10:10',
+      __dirname + '/threefiles-throw.js:21:11'
+    ]);
 
-    t.end()
-  })
-})
-
-test('\nthree files returning, one throwing an error including source', function (t) {
-  var res = bundleNmap('threefiles-throw', function (err, res) {
-    if (err) return console.error(err);
-     
-    var sm = stackMapper(res.map);
-    var error;
-    try { 
-      res.main(); 
-    } catch (e) { 
-      error = e; 
-    }
-
-    var info = sm.map(error.stack, true);
-    var stack = relevant(info, 7);
-
-    inspect(stack);
-    t.deepEqual(
-        stack
-      , [ 'Error: shouldn\'t have called foobar ;)',
-        '    at foobar (' + __dirname + '/threefiles-throw/foobar.js:4:9)',
-        '\t"  throw new Error(\'shouldn\\\'t have called foobar ;)\');  "',
-        '    at module.exports (' + __dirname + '/threefiles-throw/barbar.js:6:10)',
-        '    at bar (' + __dirname + '/threefiles-throw/main.js:8:12)',
-        '    at Object.main (' + __dirname + '/threefiles-throw/main.js:10:10)',
-        '    at ' + __dirname + '/threefiles-throw.js' ]
-      , 'returns stack with all trace information mapped'
-    )
-
+    t.deepEqual(actual, expected);
     t.end()
   })
 })
