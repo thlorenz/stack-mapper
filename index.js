@@ -1,7 +1,6 @@
 'use strict';
 
-var stackTrace = require('stack-trace')
-  , setupConsumer = require('./lib/setup-consumer')
+var setupConsumer = require('./lib/setup-consumer')
   , shims = require('./lib/shims')
 
 module.exports = 

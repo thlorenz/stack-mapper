@@ -3,7 +3,7 @@
 
 var test = require('tape')
   , stackMapper = require('../../')
-  , fromStr = require('../util/frames').fromStr
+  , fromStr = require('../util/frames-fromstr')
 
 var origStack = [
   '/full/path/to/bundle.js:5:10',

@@ -4,8 +4,8 @@
 var test = require('tape')
   , stackMapper = require('../')
   , bundleNmap = require('./util/bundle-n-map')
-  , fromStr = require('./util/frames').fromStr
-  , v8ToSm = require('./util/frames').v8ToSm
+  , fromStr = require('./util/frames-fromstr')
+  , v8ToSm = require('./util/frames-v8tosm')
 
 test('\nthree files returning, one with assert exception', function (t) {
   var res = bundleNmap('threefiles-assert', function (err, res) {
