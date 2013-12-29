@@ -4,7 +4,7 @@
   "description": "Initialize it with a source map, then feed it error stacks to have the trace locations mapped to the original files.",
   "main": "index.js",
   "scripts": {
-    "test": "tap test/*.js"
+    "test": "tape test/*.js"
   },
   "repository": {
     "type": "git",
@@ -21,8 +21,7 @@
   "devDependencies": {
     "tape": "~1.0.4",
     "convert-source-map": "~0.3.3",
-    "browserify": "~3.14.1",
-    "tap": "~0.4.6"
+    "browserify": "~3.14.1"
   },
   "keywords": [
     "sourcemap",
