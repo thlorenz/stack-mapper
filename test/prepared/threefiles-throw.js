@@ -19,7 +19,7 @@ var origStack = [
 ]
 
 var map = { version: 3,
-  file: 'generated.js',
+  file: '/path/to/bundle.js',
   sources:
    [ '/Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw/barbar.js',
      '/Users/thlorenz/dev/js/projects/stack-mapper/test/threefiles-throw/foobar.js',
@@ -31,7 +31,7 @@ var map = { version: 3,
      '\'use strict\';\n\nvar go = module.exports = function foobar() {\n  throw new Error(\'shouldn\\\'t have called foobar ;)\');  \n};\n',
      '\'use strict\';\n\nvar barbar = require(\'./barbar\');\n\nmodule.exports = function main() {\n  var a = 1;\n  function bar() {\n    return barbar();\n  }\n  return bar();\n}\n' ] }
 
-test('\nthree files returning, one throwing an error no source', function (t) {
+test('three files returning, one throwing an error no source', function (t) {
   var sm = stackMapper(map);
   var actual = sm.map(fromStr(origStack));
 

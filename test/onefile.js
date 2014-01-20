@@ -12,16 +12,17 @@ test('\none file returning error', function (t) {
   var res = bundleNmap('onefile', function (err, res) {
     if (err) return console.error(err);
 
+    res.map.file = 'full/path/to/bundle.js';
+
     var sm = stackMapper(res.map);
     var error = res.main();
     var frames = v8ToSm(error);
 
-    var actual = sm.map(frames).slice(0, 3);
+    var actual = sm.map(frames).slice(0, 2);
 
     var expected = fromStr([
         __dirname + '/onefile/main.js:6:12',
         __dirname + '/onefile/main.js:8:10',
-        __dirname + '/onefile.js:16:21'
     ]);
 
     t.deepEqual(actual, expected);
