@@ -51,12 +51,13 @@ proto._prepare = function () {
 proto._mapStack = function (stack) {
   var self = this;
 
-  var generatedFile = stack[0].filename;
+  var generatedFile = self._sourcemap.file;
+  var re = new RegExp(generatedFile + '$');
 
   for (var i = 0; i < stack.length; i++) {
     var frame = stack[i];
 
-    if (frame.filename !== generatedFile) {
+    if (!re.test(frame.filename)) {
       continue;
     }
 

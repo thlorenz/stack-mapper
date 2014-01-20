@@ -20,7 +20,7 @@ var origStack = [
 
 var map = {
   version: 3,
-  file: 'generated.js',
+  file: '/path/to/bundle.js',
   sources: [ '/Users/thlorenz/dev/js/projects/stack-mapper/test/onefile/main.js' ],
   names: [],
   mappings: ';AAAA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA;AACA',
