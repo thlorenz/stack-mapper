@@ -67,7 +67,7 @@ proto._mapStack = function (stack) {
 
     // In case that the sourcemap was generated for a javascript file, the column numbers might not have been added
     // In that case it makes sense to assume that it is the same as the generated column number
-    if (!(orig.source.slice(-3) === '.js' && orig.column === 0 && frame.column > 0)) {
+    if (!(orig.source && orig.source.slice(-3) === '.js' && orig.column === 0 && frame.column > 0)) {
       frame.column = orig.column;
     }
   }
